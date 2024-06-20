@@ -4,7 +4,7 @@ A structured representation for BIDS entities.
 
 import re
 import warnings
-from dataclasses import asdict, dataclass, field, fields
+from dataclasses import asdict, dataclass, field, fields, make_dataclass
 from functools import lru_cache
 from pathlib import Path
 from types import MappingProxyType
@@ -56,6 +56,18 @@ def bids_field(
         fld = field(default=default, metadata=metadata)
     return fld
 
+
+BIDSEntitities = make_dataclass(
+    "BIDSEntities",
+    {
+        ent["name"]: bids_field(
+            name=key,
+            display_name=ent["display_name"],
+            type=map_type(ent["type"]),
+        )
+        for key, ent in schema.objects.entities.items()
+    },
+)
 
 @dataclass
 class BIDSEntities:
